@@ -1,0 +1,16 @@
+{
+    "name": "wiilog/common",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Romain BAROT",
+            "email": "romain.barot@wiilog.fr"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-0": {
+            "WiiCommon": "src/"
+        }
+    }
+}
