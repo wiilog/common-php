@@ -9,8 +9,8 @@
     ],
     "require": {},
     "autoload": {
-        "psr-0": {
-            "WiiCommon": "src/"
+        "psr-4": {
+            "WiiCommon\\": "src/"
         }
     }
 }

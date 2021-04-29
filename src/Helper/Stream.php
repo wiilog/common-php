@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helper;
+namespace WiiCommon\Helper;
 
 use ArrayAccess;
 use ArrayIterator;
