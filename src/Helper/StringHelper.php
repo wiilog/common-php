@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helper;
+namespace WiiCommon\Helper;
 
 class StringHelper {
 
