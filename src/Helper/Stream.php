@@ -113,7 +113,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function usort(callable $callback = NULL ): Stream {
+    public function sort(callable $callback = NULL ): Stream {
         $this->checkValidity();
 
         if($callback){
