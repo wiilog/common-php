@@ -35,8 +35,8 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
      * @return Stream
      */
     public static function diff($a, $b): self {
-        $array1 = iterator_to_array($a);
-        $array2 = iterator_to_array($b);
+        $array1 = is_array($a) ? $a : iterator_to_array($a);
+        $array2 = is_array($b) ? $b : iterator_to_array($b);
         return Stream::from(
             array_diff($array1, $array2),
             array_diff($array2, $array1)
