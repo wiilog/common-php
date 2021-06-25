@@ -29,9 +29,14 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         $this->elements = $array;
     }
 
-    public static function diff(Stream $stream1, Stream $stream2): self {
-        $array1 = $stream1->elements;
-        $array2 = $stream2->elements;
+    /**
+     * @param Stream|Traversable|array $a
+     * @param Stream|Traversable|array $b
+     * @return Stream
+     */
+    public static function diff($a, $b): self {
+        $array1 = is_array($a) ? $a : iterator_to_array($a);
+        $array2 = is_array($b) ? $b : iterator_to_array($b);
         return Stream::from(
             array_diff($array1, $array2),
             array_diff($array2, $array1)
@@ -256,6 +261,13 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         $this->checkValidity();
 
         $this->elements = array_flip($this->elements);
+        return $this;
+    }
+
+    public function takeKeys(): self {
+        $this->checkValidity();
+
+        $this->elements = array_keys($this->elements);
         return $this;
     }
 
