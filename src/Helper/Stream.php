@@ -56,6 +56,15 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         }));
     }
 
+    public static function keys($array): Stream {
+        $stream = [];
+        foreach ($array as $k => $v) {
+            $stream[] = $k;
+        }
+
+        return new Stream($stream);
+    }
+
     /**
      * @param Stream|Traversable|array $array
      * @param Stream|Traversable|array ...$others
