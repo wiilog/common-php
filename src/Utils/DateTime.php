@@ -1,6 +1,6 @@
 <?php
 
-namespace WiiCommon;
+namespace WiiCommon\Utils;
 
 use \DateTime as PhpDateTime;
 use DateTimeZone;
