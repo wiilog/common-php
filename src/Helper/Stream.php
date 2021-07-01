@@ -130,7 +130,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
     public function reverse(): Stream {
         $this->checkValidity();
 
-        array_reverse($this->elements);
+        $this->elements = array_reverse($this->elements, true);
 
         return $this;
     }

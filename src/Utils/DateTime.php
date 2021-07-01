@@ -13,7 +13,7 @@ class DateTime extends PhpDateTime {
     }
 
     public static function createFromFormat($format, $datetime, DateTimeZone $timezone = null) {
-        parent::createFromFormat($format, $datetime, $timezone ?? new DateTimeZone(self::$DEFAULT_TIMEZONE));
+        return parent::createFromFormat($format, $datetime, $timezone ?? new DateTimeZone(self::$DEFAULT_TIMEZONE));
     }
 
 }
