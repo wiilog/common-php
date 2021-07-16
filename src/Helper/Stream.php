@@ -70,6 +70,16 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return new Stream($stream);
     }
 
+    public function sum(): float {
+        $array = $this->toArray();
+        $sum = 0;
+        foreach ($array as $value) {
+            $sum += $value;
+        }
+
+        return number_format((float)$sum, 2, '.', '');
+    }
+
     /**
      * @param Stream|Traversable|array $array
      * @param Stream|Traversable|array ...$others
