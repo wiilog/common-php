@@ -270,6 +270,13 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
+    public function slice(int $offset, int $length = null): self {
+        $this->checkValidity();
+
+        $this->elements = array_slice($this->elements, $offset, $length, true);
+        return $this;
+    }
+
     public function indexOf($needle) {
         $this->checkValidity();
         return array_search($needle, $this->elements);
