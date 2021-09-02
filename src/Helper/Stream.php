@@ -122,12 +122,14 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function filter(callable $callback): Stream {
+    public function filter(?callable $callback = null): Stream {
         $this->checkValidity();
 
         $elements = [];
         foreach ($this->elements as $key => $element) {
-            if ($callback($element, $key)) {
+            if(!$callback && $element) {
+                $elements[$key] = $element;
+            } else if ($callback($element, $key)) {
                 $elements[$key] = $element;
             }
         }
