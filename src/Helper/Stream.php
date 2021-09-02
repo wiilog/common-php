@@ -159,6 +159,18 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         }
     }
 
+    public function min() {
+        $this->checkValidity();
+
+        return min($this->elements);
+    }
+
+    public function max() {
+        $this->checkValidity();
+
+        return max($this->elements);
+    }
+
     public function first($default = null) {
         $this->checkValidity();
 
