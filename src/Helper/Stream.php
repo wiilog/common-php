@@ -122,12 +122,14 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function filter(callable $callback): Stream {
+    public function filter(?callable $callback = null): Stream {
         $this->checkValidity();
 
         $elements = [];
         foreach ($this->elements as $key => $element) {
-            if ($callback($element, $key)) {
+            if(!$callback && $element) {
+                $elements[$key] = $element;
+            } else if ($callback($element, $key)) {
                 $elements[$key] = $element;
             }
         }
@@ -155,6 +157,18 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
             sort($this->elements);
             return $this;
         }
+    }
+
+    public function min() {
+        $this->checkValidity();
+
+        return min($this->elements);
+    }
+
+    public function max() {
+        $this->checkValidity();
+
+        return max($this->elements);
     }
 
     public function first($default = null) {
@@ -267,6 +281,13 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         $this->checkValidity();
 
         $this->elements = array_unique($this->elements);
+        return $this;
+    }
+
+    public function slice(int $offset, int $length = null): self {
+        $this->checkValidity();
+
+        $this->elements = array_slice($this->elements, $offset, $length, true);
         return $this;
     }
 
