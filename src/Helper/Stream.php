@@ -118,7 +118,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
                     : $stream);
         }, $streams);
 
-        $this->elements = array_merge($this->elements, ...$arrays);
+        $this->elements = array_replace($this->elements, ...$arrays);
         return $this;
     }
 
