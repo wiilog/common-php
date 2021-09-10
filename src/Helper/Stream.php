@@ -147,7 +147,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function sort(callable $callback = NULL ): Stream {
+    public function sort(callable $callback = NULL): Stream {
         $this->checkValidity();
 
         if($callback){
@@ -157,6 +157,14 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
             sort($this->elements);
             return $this;
         }
+    }
+
+    public function ksort(int $flags = SORT_REGULAR): Stream {
+        $this->checkValidity();
+
+        ksort($this->elements, $flags);
+
+        return $this;
     }
 
     public function min() {
