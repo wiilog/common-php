@@ -7,8 +7,6 @@ use ArrayIterator;
 use Countable;
 use Error;
 use IteratorAggregate;
-use RecursiveArrayIterator;
-use RecursiveIteratorIterator;
 use RuntimeException;
 use Traversable;
 
@@ -43,7 +41,11 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         );
     }
 
-    public static function explode($delimiters, string $value): Stream {
+    public static function explode($delimiters, $value): Stream {
+        if(is_array($value)) {
+            return Stream::from($value);
+        }
+
         if (is_array($delimiters)) {
             if (!count($delimiters)) {
                 throw new RuntimeException("Empty delimiters array");
