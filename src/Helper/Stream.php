@@ -73,9 +73,8 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
     }
 
     public function sum(): float {
-        $array = $this->toArray();
         $sum = 0;
-        foreach ($array as $value) {
+        foreach ($this as $value) {
             $sum += $value;
         }
 
@@ -120,7 +119,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
                     : $stream);
         }, $streams);
 
-        $this->elements = array_replace($this->elements, ...$arrays);
+        $this->elements = array_merge($this->elements, ...$arrays);
         return $this;
     }
 
