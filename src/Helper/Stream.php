@@ -27,6 +27,10 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         $this->elements = $array;
     }
 
+    public static function empty(): self {
+        return new Stream([]);
+    }
+
     /**
      * @param Stream|Traversable|array $a
      * @param Stream|Traversable|array $b
@@ -41,7 +45,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         );
     }
 
-    public static function explode($delimiters, $value): Stream {
+    public static function explode($delimiters, $value): self {
         if(is_array($value)) {
             return Stream::from($value);
         }
@@ -63,7 +67,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         }));
     }
 
-    public static function keys($array): Stream {
+    public static function keys($array): self {
         $stream = [];
         foreach ($array as $k => $v) {
             $stream[] = $k;
@@ -72,21 +76,12 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return new Stream($stream);
     }
 
-    public function sum(): float {
-        $sum = 0;
-        foreach ($this as $value) {
-            $sum += $value;
-        }
-
-        return number_format((float)$sum, 2, '.', '');
-    }
-
     /**
      * @param Stream|Traversable|array $array
      * @param Stream|Traversable|array ...$others
      * @return Stream
      */
-    public static function from($array, ...$others): Stream {
+    public static function from($array, ...$others): self {
         if ($array instanceof Stream) {
             $stream = clone $array;
         } else if (is_array($array)) {
@@ -110,7 +105,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
      * @param Stream|Iterable|array ...$streams
      * @return Stream
      */
-    public function concat(...$streams): Stream {
+    public function concat(...$streams): self {
         $arrays = array_map(function($stream) {
             return $stream instanceof Stream
                 ? $stream->toArray()
@@ -123,7 +118,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function filter(?callable $callback = null): Stream {
+    public function filter(?callable $callback = null): self {
         $this->checkValidity();
 
         $elements = [];
@@ -140,7 +135,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function reverse(): Stream {
+    public function reverse(): self {
         $this->checkValidity();
 
         $this->elements = array_reverse($this->elements, true);
@@ -148,7 +143,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function sort(callable $callback = NULL): Stream {
+    public function sort(callable $callback = NULL): self {
         $this->checkValidity();
 
         if($callback){
@@ -160,7 +155,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         }
     }
 
-    public function ksort(int $flags = SORT_REGULAR): Stream {
+    public function ksort(int $flags = SORT_REGULAR): self {
         $this->checkValidity();
 
         ksort($this->elements, $flags);
@@ -200,7 +195,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return isset($key) ? $this->elements[$key] : $callback();
     }
 
-    public function map(callable $callback): Stream {
+    public function map(callable $callback): self {
         $this->checkValidity();
 
         $mapped = [];
@@ -213,7 +208,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function filterMap(callable $callback): Stream {
+    public function filterMap(callable $callback): self {
         $this->checkValidity();
 
         return $this
@@ -344,6 +339,15 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         }
 
         return $result;
+    }
+
+    public function sum(): float {
+        $sum = 0;
+        foreach ($this as $value) {
+            $sum += $value;
+        }
+
+        return number_format((float)$sum, 2, '.', '');
     }
 
     public function some(callable $callback): bool {
