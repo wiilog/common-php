@@ -8,11 +8,7 @@ jobs:
       - uses: php-actions/composer@v5
         with:
           php_version: 7.4
-          php_extensions: dom json libxml mbstring xml xmlwriter
           version: 2
 
       - name: PHPUnit Tests
         uses: php-actions/phpunit@v2
-        with:
-          bootstrap: vendor/autoload.php
-          args: --coverage-text
