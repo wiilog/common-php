@@ -136,8 +136,8 @@ class StreamTest extends TestCase
 
     public function testExceptionParamNotStringExplode()
     {
-        $this->expectException(TypeError::class);
-        $testNotString = Stream::explode("abc", ["abc", "abcd"]);
+        $testNotString = Stream::explode(["a","b"], ["abc", "abcd"])->toArray();
+        $this->assertEquals(["abc", "abcd"], $testNotString);
     }
 
     public function testExceptionEmptyDelimiteurArrayParamExplode()
