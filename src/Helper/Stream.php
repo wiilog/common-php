@@ -123,8 +123,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
 
         $elements = [];
         foreach ($this->elements as $key => $element) {
-            if (($callback && $callback($element, $key))
-                || $element) {
+            if (($callback && $callback($element, $key)) || (!$callback && $element)) {
                 $elements[$key] = $element;
             }
         }
