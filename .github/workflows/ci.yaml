@@ -13,4 +13,4 @@ jobs:
           version: 2
 
       - name: Run tests
-        run: vendor/bin/phpunit
+        run: vendor/bin/phpunit tests
