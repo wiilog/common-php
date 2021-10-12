@@ -1,0 +1,16 @@
+name: Tests
+on: [push]
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        uses: php-actions/composer@v5
+        with:
+          php_version: 7.4
+          version: 2
+
+      - name: Run tests
+        run: vendor/bin/phpunit tests
