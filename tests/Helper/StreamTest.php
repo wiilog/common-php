@@ -6,10 +6,12 @@ use DateTime;
 use Iterator;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use stdClass;
 use TypeError;
 
 class StreamTest extends TestCase
 {
+    const EMPTY_ARRAY = [];
     const MIN_VALUE = 0.0;
     const ARRAY = ['a', 'b', 'c'];
     const INT_ARRAY_KEY = ["a", "b", "c", 4, 5, 6, 7, 8, 9, 0];
@@ -457,6 +459,24 @@ class StreamTest extends TestCase
         $expectedResult = array_search("c", self::INT_ARRAY_KEY, true);
 
         $this->assertEquals($expectedResult, $testIndexOf);
+    }
+
+    public function testIsEmpty()
+    {
+        $x = new stdClass();
+        $this->assertTrue(Stream::from(self::EMPTY_ARRAY)->isEmpty());
+        $this->expectException(RuntimeException::class);
+        $testRunTimeExeption = (Stream::from($x)->isEmpty());
+
+    }
+
+    public function testFlip()
+    {
+        $expectedArray = array_flip(self::ARRAY);
+        $testStreamFlip = Stream::from(self::ARRAY)->flip()->toArray();
+        $testStreamFlipEmpty = Stream::from(self::EMPTY_ARRAY)->flip()->toArray();
+        dump($testStreamFlipEmpty);
+        $this->assertEquals($expectedArray, $testStreamFlip);
     }
 
 }
