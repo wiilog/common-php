@@ -11,10 +11,13 @@ use TypeError;
 
 class StreamTest extends TestCase
 {
+    const TYPESARRAY = [1, "a", false, ["un" => 1]];
     const EMPTY_ARRAY = [];
     const MIN_VALUE = 0.0;
     const ARRAY = ['a', 'b', 'c'];
+    const ARRAYLASTNULL = ['a', 'b', 'c', null];
     const INT_ARRAY_KEY = ["a", "b", "c", 4, 5, 6, 7, 8, 9, 0];
+    const ARRAY1 = [1, 2, 3];
     const INT_ARRAY = [0, 1, 2, 4, 5, 6];
     const EXPECTED_EVEN_ARRAY_FILTERMAP = [
         3 => 4,
@@ -26,6 +29,19 @@ class StreamTest extends TestCase
     const ARRAY_DOUBLE_VALUE = ["a", "a", "a", "b", "b"];
     const STRING = "Hello world";
     const INTEGER = "12345";
+    const STRINGKEYARRAY = ["B" => 2, "A" => 1, "Z" => 25, "X" => 23];
+    const INTKEYARRAY = [1 => 5, 2 => 7, 0 => 1];
+    const EXCPECTEDARRAYORDERBYINTKEY = [0 => 5, 1 => 7, 2 => 1];
+    const EXCPECTEDARRAYORDERBYSTRINGKEYASC = ["A" => 1, "B" => 2, "X" => 23, "Z" => 25];
+    const ARRAYTESTKEYS1 = [0 => 100, "color" => "red"];
+    const ARRAYTESTKEYS2 = ["blue", "red", "green", "blue", "blue"];
+    const ARRAYTESTKEYS3 = [
+        "color" =>
+            ["blue", "red", "green"],
+        "size" =>
+            ["small", "medium", "large"]
+    ];
+    const ARRAYSTRINGINT = ["a", "b", 1, 2];
 
     public function testFrom()
     {
@@ -97,7 +113,6 @@ class StreamTest extends TestCase
     public function testDiff()
     {
         $string = "1,3,9";
-        $arrayOne = [1, 2, 3];
         $arrayTwo = [4, 5, 6];
         $arrayKeysToKeep = [
             "foo" => "un",
@@ -108,17 +123,17 @@ class StreamTest extends TestCase
             "truc" => "trois",
         ];
         $arrayEmpty = [];
-        $expectedArray = array_merge(array_diff($arrayOne, $arrayTwo), array_diff($arrayTwo, $arrayOne));
+        $expectedArray = array_merge(array_diff(self::ARRAY1, $arrayTwo), array_diff($arrayTwo, self::ARRAY1));
         $expectedArrayWhithKey = ["truc" => "trois"];
 
-        $arrayTest = Stream::diff($arrayOne, $arrayTwo)->toArray();
-        $emptyTest = Stream::diff($arrayOne, $arrayEmpty)->toArray();
+        $arrayTest = Stream::diff(self::ARRAY1, $arrayTwo)->toArray();
+        $emptyTest = Stream::diff(self::ARRAY1, $arrayEmpty)->toArray();
 
         $this->assertEquals($expectedArray, $arrayTest);
-        $this->assertEquals($arrayOne, $emptyTest);
+        $this->assertEquals(self::ARRAY1, $emptyTest);
         $this->assertEquals($expectedArrayWhithKey, Stream::diff($arrayKeysToKeep, $arrayKeyTwo)->toArray());
         $this->expectException(TypeError::class);
-        $typeError = (Stream::diff($arrayOne, $string));
+        $typeError = (Stream::diff(self::ARRAY1, $string));
     }
 
     public function testExplode()
@@ -138,7 +153,7 @@ class StreamTest extends TestCase
 
     public function testExceptionParamNotStringExplode()
     {
-        $testNotString = Stream::explode(["a","b"], ["abc", "abcd"])->toArray();
+        $testNotString = Stream::explode(["a", "b"], ["abc", "abcd"])->toArray();
         $this->assertEquals(["abc", "abcd"], $testNotString);
     }
 
@@ -150,7 +165,6 @@ class StreamTest extends TestCase
 
     public function testKeys()
     {
-        $array = [1, 2, 3];
         $arrayData = [
             "a" => 1,
             "b" => 2
@@ -162,9 +176,9 @@ class StreamTest extends TestCase
         ];
 
         $testResult = Stream::keys($arrayData)->toArray();
-        $testResultArray = Stream::keys($array)->toArray();
+        $testResultArray = Stream::keys(self::ARRAY1)->toArray();
 
-        $this->assertEquals(array_keys($array), $testResultArray);
+        $this->assertEquals(array_keys(self::ARRAY1), $testResultArray);
         $this->assertEquals(array_keys($arrayData), $testResult);
         $this->assertEquals(array_keys($arrayMultiDim), Stream::keys($arrayMultiDim)->toArray());
     }
@@ -197,7 +211,6 @@ class StreamTest extends TestCase
         $strData = "abcde";
         $expectedString = "ABCDE";
         $testStr = implode(Stream::from(str_split($strData))->map(fn($letter) => strtoupper($letter))->toArray());
-        $dataSingleDimArray = [1, 2, 3];
         $dataMultiDimArray = [
             [111, 222, 333],
             [444, 555, 666],
@@ -219,7 +232,7 @@ class StreamTest extends TestCase
         $testMultiDimArray = Stream::from($dataMultiDimArray)
             ->map(fn($elem) => array_slice($elem, 0, 2))
             ->toArray();
-        $expectedArray = array_map(fn($n) => $n + 1, $dataSingleDimArray);
+        $expectedArray = array_map(fn($n) => $n + 1, self::ARRAY1);
         $expceptedMultiArray = [
             [111, 222],
             [444, 555],
@@ -227,10 +240,10 @@ class StreamTest extends TestCase
         ];
 
         $this->assertEquals($expectedArrayMultiDimKeys, $testMultiDimArrayKeys);
-        $this->assertEquals($expectedArray, Stream::from($dataSingleDimArray)->map(fn($n) => $n + 1)->toArray());
+        $this->assertEquals($expectedArray, Stream::from(self::ARRAY1)->map(fn($n) => $n + 1)->toArray());
         $this->assertEquals($expceptedMultiArray, $testMultiDimArray);
         $this->assertEquals($expectedString, $testStr);
-        $this->assertNotEquals($expectedArray, Stream::from($dataSingleDimArray)->map(fn($n) => $n - 1)->toArray());
+        $this->assertNotEquals($expectedArray, Stream::from(self::ARRAY1)->map(fn($n) => $n - 1)->toArray());
 
     }
 
@@ -247,9 +260,9 @@ class StreamTest extends TestCase
 
     public function testTypeExceptionFilter()
     {
-        $dataSingleDimArray = [1, 2, 3];
+
         $this->expectException(TypeError::class);
-        $test5 = (Stream::from($dataSingleDimArray)->filter('aaa')->toArray());
+        $test5 = (Stream::from(self::ARRAY1)->filter('aaa')->toArray());
     }
 
     public function testReverse()
@@ -299,10 +312,41 @@ class StreamTest extends TestCase
         $this->assertEquals($expectedOutput, $uSortTestArray);
     }
 
+
+    public function testKsort()
+    {
+        $kSortTestArrayStringKey = Stream::from(self::STRINGKEYARRAY)->ksort(2)->toArray();
+        $kSortTestArrayIntKey = Stream::from(self::INTKEYARRAY)->ksort(1)->toArray();
+
+        $this->assertEquals(self::EXCPECTEDARRAYORDERBYSTRINGKEYASC, $kSortTestArrayStringKey);
+        $this->assertEquals(self::EXCPECTEDARRAYORDERBYINTKEY, $kSortTestArrayIntKey);
+    }
+
+    public function testMin()
+    {
+        $expected = min(self::ARRAY1);
+        $expectedString = min(self::ARRAY);
+        $testMinStream = Stream::from(self::ARRAY1)->min();
+        $testMinString = Stream::from(self::ARRAY)->min();
+
+        $this->assertEquals($expected, $testMinStream);
+        $this->assertEquals($expectedString, $testMinString);
+    }
+
+    public function testMax()
+    {
+        $expected = max(self::ARRAY1);
+        $expectedString = max(self::ARRAY);
+        $testMaxStream = Stream::from(self::ARRAY1)->max();
+        $testMaxString = Stream::from(self::ARRAY)->max();
+
+        $this->assertEquals($expected, $testMaxStream);
+        $this->assertEquals($expectedString, $testMaxString);
+    }
+
     public function testConcat()
     {
         $expectedRes = [1, 2, 3, 4, 5, 6];
-        $array1 = [1, 2, 3];
         $array2 = [4, 5, 6];
         $arrayKeysToKeep = [
             "foo" => "un",
@@ -316,9 +360,9 @@ class StreamTest extends TestCase
             "truc" => "trois",
             "much" => "quatre"];
 
-        $res = Stream::from($array1)->concat($array2);
-        $testStream = Stream::from(Stream::from($array1))->concat(Stream::from($array2));
-        $testIterator = Stream::from(Stream::from($array1))->concat($this->iteratorOfArray($array2));
+        $res = Stream::from(self::ARRAY1)->concat($array2);
+        $testStream = Stream::from(Stream::from(self::ARRAY1))->concat(Stream::from($array2));
+        $testIterator = Stream::from(Stream::from(self::ARRAY1))->concat($this->iteratorOfArray($array2));
 
         $this->assertEquals($expectedRes, $res->toArray());
         $this->assertEquals($expectedRes, $testStream->toArray());
@@ -404,11 +448,49 @@ class StreamTest extends TestCase
         $this->assertEquals(array_sum(self::INT_ARRAY), $testReduce);
     }
 
-//    public function testFlatMap(){
-//        $testFlatMap = Stream::from((self::INT_ARRAY_KEY))
-//            ->flatMap(fn($value) => is_numeric($value) ? $value[] = 1 : $value)->toArray();
-//        dump($testFlatMap);
-//    }
+    public function testFlatMap()
+    {
+        $expectedResult = [
+            0 => "a",
+            1 => "b",
+            2 => 1,
+            3 => 1,
+            4 => 2,
+            5 => 2,
+        ];
+
+        $expectedResult2 = [
+            0 => "a",
+            1 => "b",
+            2 => [
+                "value" => 1,
+                "2value" => 2,
+            ],
+            3 => 1,
+            4 => [
+                "value" => 2,
+                "2value" => 4,
+            ],
+            5 => 2,
+        ];
+
+        $testFlatMap = Stream::from(self::ARRAYSTRINGINT)
+            ->flatMap(fn($value) => is_numeric($value) ? [$value, $value] : [$value])->toArray();
+
+        $testFlatMap2 = Stream::from(self::ARRAYSTRINGINT)
+            ->flatMap(fn($value) => is_numeric($value) ? [['value' => $value, '2value' => 2 * $value], $value] : [$value])->toArray();
+
+        $testFlatMap3 = Stream::from(self::EMPTY_ARRAY)
+            ->flatMap(fn($value) => is_numeric($value) ? [['value' => $value, '2value' => 2 * $value], $value] : [$value])->toArray();
+
+        $testFlatMap4 = Stream::from(self::ARRAY_DOUBLE_VALUE)
+            ->flatMap(fn($value) => [])->toArray();
+
+        $this->assertEquals($expectedResult, $testFlatMap);
+        $this->assertEquals($expectedResult2, $testFlatMap2);
+        $this->assertEmpty($testFlatMap3);
+        $this->assertEmpty($testFlatMap4);
+    }
 
     public function testFlatten()
     {
@@ -475,9 +557,153 @@ class StreamTest extends TestCase
         $expectedArray = array_flip(self::ARRAY);
         $testStreamFlip = Stream::from(self::ARRAY)->flip()->toArray();
         $testStreamFlipEmpty = Stream::from(self::EMPTY_ARRAY)->flip()->toArray();
-        dump($testStreamFlipEmpty);
+
         $this->assertEquals($expectedArray, $testStreamFlip);
+        $this->assertEmpty($testStreamFlipEmpty);
     }
 
-}
+    public function testTakeKeys()
+    {
+        $expected1 = [
+            0 => 0,
+            1 => "color"
+        ];
+        $expected2 = [
+            0 => 0,
+            1 => 1,
+            2 => 2,
+            3 => 3,
+            4 => 4,
+        ];
+        $expected3 = [
+            0 => "color",
+            1 => "size"
+        ];
+        $testTakKEys1 = Stream::from(self::ARRAYTESTKEYS1)->takeKeys()->toArray();
+        $testTakKEys2 = Stream::from(self::ARRAYTESTKEYS2)->takeKeys()->toArray();
+        $testTakKEys3 = Stream::from(self::ARRAYTESTKEYS3)->takeKeys()->toArray();
 
+        $this->assertEquals($expected1, $testTakKEys1);
+        $this->assertEquals($expected2, $testTakKEys2);
+        $this->assertEquals($expected3, $testTakKEys3);
+    }
+
+    public function testJoin()
+    {
+        $expectedResult = "axxxbxxxcxxx4xxx5xxx6xxx7xxx8xxx9xxx0";
+        $testJoin = Stream::from(self::INT_ARRAY_KEY)->join('xxx');
+
+        $this->assertEquals($expectedResult, $testJoin);
+    }
+
+    public function testValues()
+    {
+        $expectedResult = [
+            0 => [
+                0 => "blue",
+                1 => "red",
+                2 => "green",
+            ],
+            1 => [
+                0 => "small",
+                1 => "medium",
+                2 => "large",
+            ]
+        ];
+        $testValues = Stream::from(self::ARRAYTESTKEYS3)->values();
+        $this->assertEquals($expectedResult, $testValues);
+    }
+
+    public function testSome()
+    {
+        $this->assertTrue(Stream::from(self::INT_ARRAY)->some(fn($int) => $int > 5));
+        $this->assertFalse(Stream::from(self::INT_ARRAY)->some(fn($int) => $int > 10));
+        $this->assertFalse(Stream::from(self::ARRAY)->some(fn($val) => $val === "z"));
+        $this->assertTrue(Stream::from(self::ARRAY)->some(fn($val) => $val === "a"));
+    }
+
+    public function testOffsetExists()
+    {
+
+        $this->assertTrue(Stream::from(self::ARRAYTESTKEYS2)->offsetExists(0));
+        $this->assertTrue(Stream::from(self::STRINGKEYARRAY)->offsetExists("A"));
+        $this->assertFalse(Stream::from(self::STRINGKEYARRAY)->offsetExists(1));
+    }
+
+    public function testOffSetGet()
+    {
+        $this->assertEquals(self::STRINGKEYARRAY["B"], Stream::from(self::STRINGKEYARRAY)->offsetGet("B"));
+    }
+
+    public function testOffsetSet()
+    {
+        $expected = [
+            0 => "tutute",
+            1 => 1,
+            2 => 2,
+            3 => 4,
+            4 => 5,
+            5 => 6,
+        ];
+
+        $arrayNew = self::INT_ARRAY;
+        $testOffSet = Stream::from($arrayNew);
+        $testOffSet->offsetSet(0, "tutute");
+        $testOffSet = $testOffSet->toArray();
+        $this->assertEquals($expected, $testOffSet);
+
+    }
+
+    public function testOffsetUnset()
+    {
+        $expected = [
+            0 => 0,
+            2 => 2,
+            3 => 4,
+            4 => 5,
+            5 => 6
+        ];
+
+        $testUnsetOffset = Stream::from(self::INT_ARRAY);
+        $testUnsetOffset->offsetUnset(1);
+        $testUnsetOffset = $testUnsetOffset->toArray();
+
+        $this->assertEquals($expected, $testUnsetOffset);
+
+    }
+
+    public function testEach()
+    {
+        $expectedArrayKey = [0 => 0, 1 => "color"];
+        $expectedArrayValues = [0 => 100, 1 => "red"];
+        $resArrayValues = [];
+        $resArrayKey = [];
+        $testEach = Stream::from(self::ARRAYTESTKEYS1)->each(function ($value, $key) use (&$resArrayValues, &$resArrayKey) {
+            $resArrayValues[] = $value;
+            $resArrayKey[] = $key;
+
+        });
+        $this->assertEquals($expectedArrayKey, $resArrayKey);
+        $this->assertEquals($expectedArrayValues, $resArrayValues);
+    }
+
+    public function testCheckValidity()
+    {
+
+        $this->assertTrue(Stream::from(self::ARRAYSTRINGINT)->checkValidity());
+    }
+
+    public function testValidityFalse()
+    {
+        $testValues = Stream::from(self::ARRAYTESTKEYS3);
+        $testValues->values();
+        $this->expectExceptionMessage("Stream already got consumed");
+        $test = $testValues->checkValidity();
+    }
+
+    public function testEmpty()
+    {
+        $testEmpty = Stream::empty();
+        $this->assertEmpty($testEmpty);
+    }
+}

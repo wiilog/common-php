@@ -401,10 +401,11 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         unset($this->elements[$offset]);
     }
 
-    public function checkValidity(): void {
+    public function checkValidity(): bool {
         if (!isset($this->elements)) {
             throw new Error(self::INVALID_STREAM);
         }
+        return true;
     }
 
 }
