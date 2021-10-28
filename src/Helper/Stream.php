@@ -82,6 +82,14 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
      * @return Stream
      */
     public static function from($array, ...$others): self {
+        $preserveKeys = false;
+        if(count($others)) {
+            $last = $others[count($others) - 1];
+            if(is_bool($last)) {
+                $preserveKeys = array_pop($others);
+            }
+        }
+
         if ($array instanceof Stream) {
             $stream = clone $array;
         } else if (is_array($array)) {
@@ -98,23 +106,31 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
             throw new RuntimeException("Unsupported type `$type`, expected array or iterable");
         }
 
-        return $stream->concat(...$others);
+        foreach($others as $other) {
+            $stream->concat($other, $preserveKeys);
+        }
+
+        return $stream;
     }
 
     /**
-     * @param Stream|Iterable|array ...$streams
+     * @param Stream|Iterable|array ...$stream
+     * @param bool $preserveKeys
      * @return Stream
      */
-    public function concat(...$streams): self {
-        $arrays = array_map(function($stream) {
-            return $stream instanceof Stream
+    public function concat($stream, bool $preserveKeys = false): self {
+        $array = $stream instanceof Stream
                 ? $stream->toArray()
                 : ($stream instanceof Traversable
                     ? iterator_to_array($stream)
                     : $stream);
-        }, $streams);
 
-        $this->elements = array_merge($this->elements, ...$arrays);
+        if($preserveKeys) {
+            $this->elements = array_replace($this->elements, ...$array);
+        } else {
+            $this->elements = array_merge($this->elements, $array);
+        }
+
         return $this;
     }
 
@@ -312,6 +328,13 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
+    public function reindex(): self {
+        $this->checkValidity();
+
+        $this->elements = array_values($this->elements);
+        return $this;
+    }
+
     public function each(callable $callback): self {
         $this->checkValidity();
 
@@ -350,9 +373,14 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
 
     public function some(callable $callback): bool {
         $this->checkValidity();
-        $arrayToReduce = $this->elements;
-        $reducedArray = array_filter($arrayToReduce, fn($element) => $callback($element));
-        return count($reducedArray) > 0;
+
+        foreach($this->elements as $key => $element) {
+            if($callback($element, $key)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function toArray(): array {
