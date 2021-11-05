@@ -10,6 +10,12 @@ use IteratorAggregate;
 use RuntimeException;
 use Traversable;
 
+/**
+ * @Suppress
+ * @method static int sum()
+ * @method static self filter(callable $callback)
+ * @method static self map(callable $callback)
+ */
 class Stream implements Countable, IteratorAggregate, ArrayAccess {
 
     private const INVALID_STREAM = "Stream already got consumed";
@@ -19,10 +25,6 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
      */
     private $elements;
 
-    /**
-     * Stream constructor.
-     * @param array $array
-     */
     private function __construct(array $array) {
         $this->elements = $array;
     }
