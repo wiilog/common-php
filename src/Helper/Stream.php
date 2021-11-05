@@ -27,6 +27,10 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         $this->elements = $array;
     }
 
+    public static function __callStatic(string $name, array $arguments) {
+        return Stream::from(array_shift($arguments))->{$name}($arguments);
+    }
+
     public static function empty(): self {
         return new Stream([]);
     }
