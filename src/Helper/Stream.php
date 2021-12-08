@@ -10,12 +10,6 @@ use IteratorAggregate;
 use RuntimeException;
 use Traversable;
 
-/**
- * @Suppress
- * @method static int sum()
- * @method static self filter(callable $callback)
- * @method static self map(callable $callback)
- */
 class Stream implements Countable, IteratorAggregate, ArrayAccess {
 
     private const INVALID_STREAM = "Stream already got consumed";
@@ -40,15 +34,21 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
     /**
      * @param Stream|Traversable|array $a
      * @param Stream|Traversable|array $b
+     * @param bool $unidirectional
      * @return Stream
      */
-    public static function diff($a, $b): self {
+    public static function diff($a, $b, bool $unidirectional = false): self {
         $array1 = is_array($a) ? $a : iterator_to_array($a);
         $array2 = is_array($b) ? $b : iterator_to_array($b);
-        return Stream::from(
-            array_diff($array1, $array2),
-            array_diff($array2, $array1)
-        );
+
+        if($unidirectional) {
+            return Stream::from(array_diff($a, $b));
+        } else {
+            return Stream::from(
+                array_diff($array1, $array2),
+                array_diff($array2, $array1)
+            );
+        }
     }
 
     public static function explode($delimiters, $value): self {
