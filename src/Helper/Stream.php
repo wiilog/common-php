@@ -37,17 +37,28 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
      * @param bool $unidirectional
      * @return Stream
      */
-    public static function diff($a, $b, bool $unidirectional = false): self {
+    public static function diff($a, $b, bool $unidirectional = false, bool $insensitive = false): self {
         $array1 = is_array($a) ? $a : iterator_to_array($a);
         $array2 = is_array($b) ? $b : iterator_to_array($b);
 
         if($unidirectional) {
-            return Stream::from(array_diff($a, $b));
+            if($insensitive) {
+                return Stream::from(array_udiff($a, $b, 'strcasecmp'));
+            } else {
+                return Stream::from(array_diff($a, $b));
+            }
         } else {
-            return Stream::from(
-                array_diff($array1, $array2),
-                array_diff($array2, $array1)
-            );
+            if($insensitive) {
+                return Stream::from(
+                    array_udiff($array1, $array2, 'strcasecmp'),
+                    array_udiff($array2, $array1, 'strcasecmp')
+                );
+            } else {
+                return Stream::from(
+                    array_diff($array1, $array2),
+                    array_diff($array2, $array1)
+                );
+            }
         }
     }
 
