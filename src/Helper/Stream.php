@@ -388,6 +388,18 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return number_format((float)$sum, 2, '.', '');
     }
 
+    public function every(callable $callback): bool {
+        $this->checkValidity();
+
+        foreach($this->elements as $key => $element) {
+            if(!$callback($element, $key)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function some(callable $callback): bool {
         $this->checkValidity();
 
