@@ -213,6 +213,13 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return isset($key) ? $this->elements[$key] : $default;
     }
 
+    public function last($default = null) {
+        $this->checkValidity();
+
+        $key = array_key_last($this->elements);
+        return isset($key) ? $this->elements[$key] : $default;
+    }
+
     public function firstKey() {
         $this->checkValidity();
 
