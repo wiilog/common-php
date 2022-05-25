@@ -39,4 +39,9 @@ class StringHelper {
         return substr(str_shuffle(str_repeat($x = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / strlen($x)))), 1, $length);
     }
 
+    public static function multiplePregReplace(array $patternReplacements, string $subject, int $limit = -1): string {
+        $patterns = array_keys($patternReplacements);
+        $replacements = array_values($patternReplacements);
+        return preg_replace($patterns, $replacements, $subject, $limit);
+    }
 }

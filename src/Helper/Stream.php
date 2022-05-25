@@ -7,8 +7,6 @@ use ArrayIterator;
 use Countable;
 use Error;
 use IteratorAggregate;
-use RecursiveArrayIterator;
-use RecursiveIteratorIterator;
 use RuntimeException;
 use Traversable;
 
@@ -21,24 +19,54 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
      */
     private $elements;
 
-    /**
-     * Stream constructor.
-     * @param array $array
-     */
     private function __construct(array $array) {
         $this->elements = $array;
     }
 
-    public static function diff(Stream $stream1, Stream $stream2): self {
-        $array1 = $stream1->elements;
-        $array2 = $stream2->elements;
-        return Stream::from(
-            array_diff($array1, $array2),
-            array_diff($array2, $array1)
-        );
+    public static function __callStatic(string $name, array $arguments) {
+        return Stream::from(array_shift($arguments))->{$name}($arguments);
     }
 
-    public static function explode($delimiters, string $value): Stream {
+    public static function empty(): self {
+        return new Stream([]);
+    }
+
+    /**
+     * @param Stream|Traversable|array $a
+     * @param Stream|Traversable|array $b
+     * @param bool $unidirectional
+     * @return Stream
+     */
+    public static function diff($a, $b, bool $unidirectional = false, bool $insensitive = false): self {
+        $array1 = is_array($a) ? $a : iterator_to_array($a);
+        $array2 = is_array($b) ? $b : iterator_to_array($b);
+
+        if($unidirectional) {
+            if($insensitive) {
+                return Stream::from(array_udiff($a, $b, 'strcasecmp'));
+            } else {
+                return Stream::from(array_diff($a, $b));
+            }
+        } else {
+            if($insensitive) {
+                return Stream::from(
+                    array_udiff($array1, $array2, 'strcasecmp'),
+                    array_udiff($array2, $array1, 'strcasecmp')
+                );
+            } else {
+                return Stream::from(
+                    array_diff($array1, $array2),
+                    array_diff($array2, $array1)
+                );
+            }
+        }
+    }
+
+    public static function explode($delimiters, $value): self {
+        if(is_array($value)) {
+            return Stream::from($value);
+        }
+
         if (is_array($delimiters)) {
             if (!count($delimiters)) {
                 throw new RuntimeException("Empty delimiters array");
@@ -56,12 +84,29 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         }));
     }
 
+    public static function keys($array): self {
+        $stream = [];
+        foreach ($array as $k => $v) {
+            $stream[] = $k;
+        }
+
+        return new Stream($stream);
+    }
+
     /**
      * @param Stream|Traversable|array $array
      * @param Stream|Traversable|array ...$others
      * @return Stream
      */
-    public static function from($array, ...$others): Stream {
+    public static function from($array, ...$others): self {
+        $preserveKeys = false;
+        if(count($others)) {
+            $last = $others[count($others) - 1];
+            if(is_bool($last)) {
+                $preserveKeys = array_pop($others);
+            }
+        }
+
         if ($array instanceof Stream) {
             $stream = clone $array;
         } else if (is_array($array)) {
@@ -78,32 +123,40 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
             throw new RuntimeException("Unsupported type `$type`, expected array or iterable");
         }
 
-        return $stream->concat(...$others);
+        foreach($others as $other) {
+            $stream->concat($other, $preserveKeys);
+        }
+
+        return $stream;
     }
 
     /**
-     * @param Stream|Iterable|array ...$streams
+     * @param Stream|Iterable|array ...$stream
+     * @param bool $preserveKeys
      * @return Stream
      */
-    public function concat(...$streams): Stream {
-        $arrays = array_map(function($stream) {
-            return $stream instanceof Stream
+    public function concat($stream, bool $preserveKeys = false): self {
+        $array = $stream instanceof Stream
                 ? $stream->toArray()
                 : ($stream instanceof Traversable
                     ? iterator_to_array($stream)
                     : $stream);
-        }, $streams);
 
-        $this->elements = array_merge($this->elements, ...$arrays);
+        if($preserveKeys) {
+            $this->elements = array_replace($this->elements, ...$array);
+        } else {
+            $this->elements = array_merge($this->elements, $array);
+        }
+
         return $this;
     }
 
-    public function filter(callable $callback): Stream {
+    public function filter(?callable $callback = null): self {
         $this->checkValidity();
 
         $elements = [];
         foreach ($this->elements as $key => $element) {
-            if ($callback($element, $key)) {
+            if (($callback && $callback($element, $key)) || (!$callback && $element)) {
                 $elements[$key] = $element;
             }
         }
@@ -113,7 +166,15 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function usort(callable $callback = NULL ): Stream {
+    public function reverse(): self {
+        $this->checkValidity();
+
+        $this->elements = array_reverse($this->elements, true);
+
+        return $this;
+    }
+
+    public function sort(callable $callback = NULL): self {
         $this->checkValidity();
 
         if($callback){
@@ -123,6 +184,26 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
             sort($this->elements);
             return $this;
         }
+    }
+
+    public function ksort(int $flags = SORT_REGULAR): self {
+        $this->checkValidity();
+
+        ksort($this->elements, $flags);
+
+        return $this;
+    }
+
+    public function min() {
+        $this->checkValidity();
+
+        return min($this->elements);
+    }
+
+    public function max() {
+        $this->checkValidity();
+
+        return max($this->elements);
     }
 
     public function first($default = null) {
@@ -145,7 +226,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return isset($key) ? $this->elements[$key] : $callback();
     }
 
-    public function map(callable $callback): Stream {
+    public function map(callable $callback): self {
         $this->checkValidity();
 
         $mapped = [];
@@ -158,7 +239,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function filterMap(callable $callback): Stream {
+    public function filterMap(callable $callback): self {
         $this->checkValidity();
 
         return $this
@@ -217,11 +298,9 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         $this->checkValidity();
 
         $elements = [];
-        $iterator = new RecursiveIteratorIterator(new RecursiveArrayIterator($this->elements));
-
-        foreach ($iterator as $element) {
-            $elements[] = $element;
-        }
+        array_walk_recursive($this->elements, function($i) use (&$elements) {
+            $elements[] = $i;
+        });
 
         $this->elements = $elements;
 
@@ -240,6 +319,13 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
+    public function slice(int $offset, int $length = null): self {
+        $this->checkValidity();
+
+        $this->elements = array_slice($this->elements, $offset, $length, true);
+        return $this;
+    }
+
     public function indexOf($needle) {
         $this->checkValidity();
         return array_search($needle, $this->elements);
@@ -249,6 +335,20 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         $this->checkValidity();
 
         $this->elements = array_flip($this->elements);
+        return $this;
+    }
+
+    public function takeKeys(): self {
+        $this->checkValidity();
+
+        $this->elements = array_keys($this->elements);
+        return $this;
+    }
+
+    public function reindex(): self {
+        $this->checkValidity();
+
+        $this->elements = array_values($this->elements);
         return $this;
     }
 
@@ -279,11 +379,37 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $result;
     }
 
+    public function sum(): float {
+        $sum = 0;
+        foreach ($this as $value) {
+            $sum += $value;
+        }
+
+        return number_format((float)$sum, 2, '.', '');
+    }
+
+    public function every(callable $callback): bool {
+        $this->checkValidity();
+
+        foreach($this->elements as $key => $element) {
+            if(!$callback($element, $key)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function some(callable $callback): bool {
         $this->checkValidity();
-        $arrayToReduce = $this->elements;
-        $reducedArray = array_filter($arrayToReduce, fn($element) => $callback($element));
-        return count($reducedArray) > 0;
+
+        foreach($this->elements as $key => $element) {
+            if($callback($element, $key)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function toArray(): array {
