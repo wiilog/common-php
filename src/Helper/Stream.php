@@ -395,11 +395,11 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return number_format((float)$sum, 2, '.', '');
     }
 
-    public function every(callable $callback): bool {
+    public function every(callable $callback = null): bool {
         $this->checkValidity();
 
         foreach($this->elements as $key => $element) {
-            if(!$callback($element, $key)) {
+            if(!$$callback && $element || !$callback($element, $key)) {
                 return false;
             }
         }
