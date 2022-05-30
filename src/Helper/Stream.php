@@ -399,7 +399,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         $this->checkValidity();
 
         foreach($this->elements as $key => $element) {
-            if(!$callback && $element || !$callback($element, $key)) {
+            if(!$callback && $element || $callback && !$callback($element, $key)) {
                 return false;
             }
         }
