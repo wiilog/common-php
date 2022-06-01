@@ -295,7 +295,10 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
     public function flatMap(callable $callback) {
         $this->checkValidity();
 
-        $mappedArray = $this->map($callback)->toArray();
+        $mappedArray = $this->map($callback)
+            ->map(fn($input) => is_array($input) ? $input : iterator_to_array($input))
+            ->toArray();
+        
         $this->elements = array_merge(...$mappedArray);
 
         return $this;
