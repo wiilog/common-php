@@ -299,7 +299,10 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
     public function flatMap(callable $callback) {
         $this->checkValidity();
 
-        $mappedArray = $this->map($callback)->toArray();
+        $mappedArray = $this->map($callback)
+            ->map(fn($input) => is_array($input) ? $input : iterator_to_array($input))
+            ->toArray();
+        
         $this->elements = array_merge(...$mappedArray);
 
         return $this;
@@ -399,11 +402,11 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return number_format((float)$sum, 2, '.', '');
     }
 
-    public function every(callable $callback): bool {
+    public function every(callable $callback = null): bool {
         $this->checkValidity();
 
         foreach($this->elements as $key => $element) {
-            if(!$callback($element, $key)) {
+            if(!$callback && !$element || $callback && !$callback($element, $key)) {
                 return false;
             }
         }
