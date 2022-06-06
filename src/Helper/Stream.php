@@ -31,6 +31,10 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return new Stream([]);
     }
 
+    public static function fill(int $start_index, int $count, $value): self {
+        return new Stream(array_fill($start_index, $count, $value));
+    }
+
     /**
      * @param Stream|Traversable|array $a
      * @param Stream|Traversable|array $b
