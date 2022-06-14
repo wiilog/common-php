@@ -147,7 +147,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
                     : $stream);
 
         if($preserveKeys) {
-            $this->elements = array_replace($this->elements, ...$array);
+            $this->elements = array_replace($this->elements, $array);
         } else {
             $this->elements = array_merge($this->elements, $array);
         }
