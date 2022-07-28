@@ -4,7 +4,7 @@ namespace WiiCommon\Helper;
 
 class StringHelper {
 
-    private static function stripUTF8Accents($str, &$map) {
+    public static function stripUTF8Accents($str, &$map) {
         // find all multibyte characters (cf. utf-8 encoding specs)
         $matches = [];
         if (!preg_match_all("/[\xC0-\xF7][\x80-\xBF]+/", $str, $matches))
