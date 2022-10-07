@@ -489,4 +489,16 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
 
         return null;
     }
+
+    public function findKey(callable $callback): mixed {
+        $this->checkValidity();
+
+        foreach($this->elements as $key => $element) {
+            if($callback($element, $key)) {
+                return $key;
+            }
+        }
+
+        return null;
+    }
 }
