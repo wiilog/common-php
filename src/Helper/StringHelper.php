@@ -4,7 +4,9 @@ namespace WiiCommon\Helper;
 
 class StringHelper {
 
-    public static function stripUTF8Accents($str, &$map) {
+    public const PHONE_NUMBER_REGEX = "/^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$/";
+
+    public static function stripUTF8Accents($str, &$map): string {
         // find all multibyte characters (cf. utf-8 encoding specs)
         $matches = [];
         if (!preg_match_all("/[\xC0-\xF7][\x80-\xBF]+/", $str, $matches))
@@ -19,11 +21,11 @@ class StringHelper {
         return strtr($str, $map);
     }
 
-    public static function stripAccents($string) {
+    public static function stripAccents($string): string {
         return strtr(utf8_decode($string), utf8_decode('àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ'), 'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
     }
 
-    public static function levenshtein($s1, $s2) {
+    public static function levenshtein($s1, $s2): int {
         $charMap = [];
         $s1 = self::stripUTF8Accents($s1, $charMap);
         $s2 = self::stripUTF8Accents($s2, $charMap);
