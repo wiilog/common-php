@@ -497,7 +497,6 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         }
 
         return null;
-    }cifailtest2
-
+    }
 
 }
