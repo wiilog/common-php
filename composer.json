@@ -2,9 +2,9 @@
     "name": "wiilog/common",
     "type": "library",
     "require-dev": {
-        "phpunit/phpunit": "^9",
-        "dama/doctrine-test-bundle": "^6.6",
-        "symfony/phpunit-bridge": "^5.3"
+        "phpunit/phpunit": "^9.5",
+        "dama/doctrine-test-bundle": "^7.1",
+        "symfony/phpunit-bridge": "^6.1"
     },
     "autoload": {
         "psr-4": {

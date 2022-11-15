@@ -14,10 +14,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
 
     private const INVALID_STREAM = "Stream already got consumed";
 
-    /**
-     * @var array $elements
-     */
-    private $elements;
+    private ?array $elements;
 
     private function __construct(array $array) {
         $this->elements = $array;
@@ -452,23 +449,23 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return count($this->elements);
     }
 
-    public function getIterator() {
+    public function getIterator(): Traversable {
         return new ArrayIterator($this->elements);
     }
 
-    public function offsetExists($offset) {
+    public function offsetExists($offset): bool {
         return isset($this->elements[$offset]);
     }
 
-    public function offsetGet($offset) {
+    public function offsetGet($offset): mixed {
         return $this->elements[$offset];
     }
 
-    public function offsetSet($offset, $value) {
+    public function offsetSet($offset, $value): void {
         $this->elements[$offset] = $value;
     }
 
-    public function offsetUnset($offset) {
+    public function offsetUnset($offset): void {
         unset($this->elements[$offset]);
     }
 
@@ -501,4 +498,5 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
 
         return null;
     }
+
 }
