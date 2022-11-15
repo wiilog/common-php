@@ -46,4 +46,8 @@ class StringHelper {
         $replacements = array_values($patternReplacements);
         return preg_replace($patterns, $replacements, $subject, $limit);
     }
+
+    public static function cleanedComment(string $string): string {
+        return preg_replace('/[^\x20-\x7e]/', "", $string);
+    }
 }
