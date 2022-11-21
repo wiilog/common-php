@@ -10,5 +10,8 @@
         "psr-4": {
             "WiiCommon\\": "src/"
         }
+    },
+    "require": {
+        "ext-json": "*"
     }
 }
