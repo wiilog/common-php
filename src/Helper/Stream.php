@@ -431,6 +431,14 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $streamArray;
     }
 
+    public function json(): string {
+        $this->checkValidity();
+
+        $streamArray = $this->elements;
+        $this->elements = null;
+        return json_encode($streamArray);
+    }
+
     public function values(): array {
         $this->checkValidity();
 
@@ -498,5 +506,6 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
 
         return null;
     }
+
 
 }
