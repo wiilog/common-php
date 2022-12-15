@@ -50,6 +50,6 @@ class StringHelper {
     public static function cleanedComment(?string $string): ?string {
         return isset($string)
             ? preg_replace('/[^\x20-\x7e]/', "", $string)
-            null;
+            : null;
     }
 }
