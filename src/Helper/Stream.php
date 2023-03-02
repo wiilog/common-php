@@ -507,5 +507,15 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return null;
     }
 
+    public function intersect(array $array, bool $byKey = false): self {
+        $this->checkValidity();
 
+        if($byKey) {
+            $this->elements = array_intersect_key($array, $this->elements);
+        } else {
+            $this->elements = array_intersect($array, $this->elements);
+        }
+
+        return $this;
+    }
 }
