@@ -390,13 +390,13 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $result;
     }
 
-    public function sum(): float {
+    public function sum(int $decimals = 2): float {
         $sum = 0;
         foreach ($this as $value) {
             $sum += $value;
         }
 
-        return number_format((float)$sum, 2, '.', '');
+        return number_format((float)$sum, $decimals, '.', '');
     }
 
     public function every(callable $callback = null): bool {
