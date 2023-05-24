@@ -518,4 +518,29 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
 
         return $this;
     }
+
+    public function set(string|int $key, mixed $value): self {
+        $this->checkValidity();
+        $this->elements[$key] = $value;
+        return $this;
+    }
+
+    public function unset(string|int $key): self {
+        $this->checkValidity();
+        unset($this->elements[$key]);
+        return $this;
+    }
+
+    public function push(mixed ...$values): self {
+        $this->checkValidity();
+        array_push($this->elements, ...$values);
+        return $this;
+    }
+
+    public function unshift(mixed ...$values): self {
+        $this->checkValidity();
+        array_unshift($this->elements, ...$values);
+        return $this;
+    }
+
 }
