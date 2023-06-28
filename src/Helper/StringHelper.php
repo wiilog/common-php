@@ -46,10 +46,4 @@ class StringHelper {
         $replacements = array_values($patternReplacements);
         return preg_replace($patterns, $replacements, $subject, $limit);
     }
-
-    public static function cleanedComment(?string $string): ?string {
-        return isset($string)
-            ? utf8_encode(strip_tags(preg_replace('/[^\x20-\x7EÄÂÀÉÈÊËÜÛÙÎÏÇÖÔŒÆéèçà°æœùµ§€ûêâëäüïî«»…¿’²£¥±©®\t]/', "", $string)))  //strip_tags: supprime les balises HTML en BDD
-            : null;
-    }
 }
