@@ -49,7 +49,7 @@ class StringHelper {
 
     public static function cleanedComment(?string $string): ?string {
         return isset($string)
-            ? strip_tags(preg_replace('/[^\x20-\x7EÄÂÀÉÈÊËÜÛÙÎÏÇÖÔŒÆéèçà°æœùµ§€ûêâëäüïî«»…¿’²£¥±©®\t]/', "", $string))  //strip_tags: supprime les balises HTML en BDD
+            ? utf8_encode(strip_tags(preg_replace('/[^\x20-\x7EÄÂÀÉÈÊËÜÛÙÎÏÇÖÔŒÆéèçà°æœùµ§€ûêâëäüïî«»…¿’²£¥±©®\t]/', "", $string)))  //strip_tags: supprime les balises HTML en BDD
             : null;
     }
 }
