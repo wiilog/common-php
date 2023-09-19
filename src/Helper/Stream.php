@@ -305,13 +305,19 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function flatten(): self {
+    public function flatten(bool $keepKeys = false): self {
         $this->checkValidity();
 
         $elements = [];
-        array_walk_recursive($this->elements, function($i) use (&$elements) {
-            $elements[] = $i;
-        });
+        if($keepKeys) {
+            array_walk_recursive($this->elements, function($value, $key) use (&$elements) {
+                $elements[$key] = $value;
+            });
+        } else {
+            array_walk_recursive($this->elements, function($value) use (&$elements) {
+                $elements[] = $value;
+            });
+        }
 
         $this->elements = $elements;
 
