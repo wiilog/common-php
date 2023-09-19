@@ -5,6 +5,7 @@ namespace WiiCommon\Helper;
 class StringHelper {
 
     public const PHONE_NUMBER_REGEX = "/^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$/";
+    public const INTEGER_AND_DECIMAL_REGEX = '/^\d+(?:[.,]\d+)?$/';
 
     public static function stripUTF8Accents($str, &$map): string {
         // find all multibyte characters (cf. utf-8 encoding specs)
@@ -22,7 +23,7 @@ class StringHelper {
     }
 
     public static function stripAccents($string): string {
-        return strtr(utf8_decode($string), utf8_decode('àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ'), 'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
+        return strtr(mb_convert_encoding($string, 'ISO-8859-1', 'UTF-8'), mb_convert_encoding('àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ', 'ISO-8859-1', 'UTF-8'), 'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
     }
 
     public static function levenshtein($s1, $s2): int {
@@ -45,5 +46,11 @@ class StringHelper {
         $patterns = array_keys($patternReplacements);
         $replacements = array_values($patternReplacements);
         return preg_replace($patterns, $replacements, $subject, $limit);
+    }
+
+    public static function matchEvery(string|array $subject, string $pattern): bool {
+        $subject = is_array($subject) ? $subject : [$subject];
+        return Stream::from($subject)
+            ->every(static fn(mixed $element) => preg_match($pattern, $element));
     }
 }
