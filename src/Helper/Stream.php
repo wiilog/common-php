@@ -549,4 +549,9 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
+    public function joinMap(callable $callback, string $separator = ", "): string {
+        $this->checkValidity();
+        return $this->map($callback)->join($separator);
+    }
+
 }
