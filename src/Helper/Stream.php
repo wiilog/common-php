@@ -63,26 +63,28 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         }
     }
 
-    public static function explode($delimiters, $value): self {
+    public static function explode(string|array $delimiters, $value): self {
         if(is_array($value)) {
             return Stream::from($value);
         }
 
-        if (is_array($delimiters)) {
-            if (!count($delimiters)) {
-                throw new RuntimeException("Empty delimiters array");
-            }
+        if (!is_array($delimiters)) {
+            $delimiters = [$delimiters];
+        }
 
+        if (empty($delimiters)) {
+            throw new RuntimeException("Empty delimiters");
+        }
+        else if (count($delimiters) === 1) {
+            $exploded = explode($delimiters[0], $value);
+        }
+        else {
             $delimiter = array_shift($delimiters);
             $value = str_replace($delimiters, $delimiter, $value);
             $exploded = explode($delimiter, $value);
-        } else {
-            $exploded = explode($delimiters, $value);
         }
 
-        return new Stream(array_filter($exploded, function($item) {
-            return $item !== "";
-        }));
+        return new Stream($exploded);
     }
 
     public static function keys($array): self {
