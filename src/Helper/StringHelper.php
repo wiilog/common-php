@@ -53,4 +53,12 @@ class StringHelper {
         return Stream::from($subject)
             ->every(static fn(mixed $element) => preg_match($pattern, $element));
     }
+
+    private function convertMaskToRegex(string $mask): string {
+        return str_replace(
+            ["\*", "\?"], // wildcard chars
+            ['.*', '.'],   // regexp chars
+            preg_quote($mask)
+        );
+    }
 }
