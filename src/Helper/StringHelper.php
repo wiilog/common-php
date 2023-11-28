@@ -54,7 +54,7 @@ class StringHelper {
             ->every(static fn(mixed $element) => preg_match($pattern, $element));
     }
 
-    private function convertMaskToRegex(string $mask): string {
+    public function convertMaskToRegex(string $mask): string {
         return str_replace(
             ["\*", "\?"], // wildcard chars
             ['.*', '.'],   // regexp chars
