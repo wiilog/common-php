@@ -333,6 +333,8 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
 
     public function unique(callable $callback = null): self
     {
+        $this->checkValidity();
+        
         if ($callback) {
             $unique = [];
             foreach ($this->elements as $key => $element) {
