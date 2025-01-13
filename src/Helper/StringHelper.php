@@ -61,4 +61,15 @@ class StringHelper {
             preg_quote($mask)
         );
     }
+
+    /**
+     * Add delimiters to given pattern regex if missing
+     */
+    public static function toRegex(string $pattern): string {
+        if (!preg_match('/^\/.*\/$/', $pattern)) { // Check if a regex is valid
+            $pattern = '/' . str_replace('/', '\/', $pattern) . '/';
+        }
+
+        return $pattern;
+    }
 }
