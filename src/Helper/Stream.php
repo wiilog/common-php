@@ -268,14 +268,14 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
 
             if ($keymap) {
                 [$key, $element] = $keymap;
-                if ($grouped) {
-                    if (!isset($mapped[$key])) {
-                        $mapped[$key] = [];
+                if(is_iterable($key)){
+                    $keys = $key;
+                    foreach ($keys as $key) {
+                        $this->keymapSetElement($key, $element, $grouped, $mapped);
                     }
-                    $mapped[$key][] = $element;
                 }
                 else {
-                    $mapped[$key] = $element;
+                    $this->keymapSetElement($key, $element, $grouped, $mapped);
                 }
             }
         }
@@ -549,6 +549,21 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         $this->checkValidity();
         array_unshift($this->elements, ...$values);
         return $this;
+    }
+
+    public function keymapSetElement(mixed $key,
+                                     mixed $element,
+                                     bool $grouped,
+                                     array &$mapped) : void {
+        if ($grouped) {
+            if (!isset($mapped[$key])) {
+                $mapped[$key] = [];
+            }
+            $mapped[$key][] = $element;
+        }
+        else {
+            $mapped[$key] = $element;
+        }
     }
 
 }
