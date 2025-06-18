@@ -74,6 +74,7 @@ La plupart des méthodes d'instance modifient le flux actuel et retournent le fl
 
 - `every(callable $callback = null) : bool` : Vérifie si tous les éléments du flux satisfont une condition.
 - `some(callable $callback) : bool` : Vérifie si au moins un élément du flux satisfait une condition.
+- `hasAtLeast(callable $callback, int $limit) : bool` : Vérifie si au moins un certain nombre de élément du flux satisfait une condition.
 
 ### Méthodes d'accès aux éléments
 
