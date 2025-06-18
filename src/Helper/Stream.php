@@ -431,6 +431,22 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return false;
     }
 
+    public function hasAtLeast(callable $callback, int $limit): bool {
+        $this->checkValidity();
+
+        $count = 0;
+        foreach($this->elements as $key => $element) {
+            if($callback($element, $key)) {
+                $count++;
+                if($count >= $limit) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function toArray(): array {
         $this->checkValidity();
 
