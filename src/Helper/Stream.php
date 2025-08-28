@@ -177,7 +177,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function sort(callable $callback = NULL): self {
+    public function sort(?callable $callback = NULL): self {
         $this->checkValidity();
 
         if($callback){
@@ -301,7 +301,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         $mappedArray = $this->map($callback)
             ->map(fn($input) => is_array($input) ? $input : iterator_to_array($input))
             ->toArray();
-        
+
         $this->elements = array_merge(...$mappedArray);
 
         return $this;
@@ -338,7 +338,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function slice(int $offset, int $length = null): self {
+    public function slice(int $offset, ?int $length = null): self {
         $this->checkValidity();
 
         $this->elements = array_slice($this->elements, $offset, $length, true);
@@ -407,7 +407,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return number_format((float)$sum, $decimals, '.', '');
     }
 
-    public function every(callable $callback = null): bool {
+    public function every(?callable $callback = null): bool {
         $this->checkValidity();
 
         foreach($this->elements as $key => $element) {
