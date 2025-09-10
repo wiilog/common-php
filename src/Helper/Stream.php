@@ -331,10 +331,25 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function unique(): self {
+    public function unique(callable $getComparisonKey = null): self {
         $this->checkValidity();
 
-        $this->elements = array_unique($this->elements);
+        if ($getComparisonKey === null) {
+            $this->elements = array_unique($this->elements, SORT_REGULAR);
+        } else {
+            $comparisonKeys = [];
+            $uniqueElements = [];
+
+            foreach ($this->elements as $element) {
+                $key = $getComparisonKey($element);
+
+                if (!in_array($key, $comparisonKeys, true)) {
+                    $comparisonKeys[] = $key;
+                    $uniqueElements[] = $element;
+                }
+            }
+            $this->elements = $uniqueElements;
+        }
         return $this;
     }
 
