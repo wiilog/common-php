@@ -87,6 +87,16 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return new Stream($exploded);
     }
 
+    public static function fromJson(string $value): self {
+        $elements = json_decode($value, true);
+
+        if (!isset($elements) || !is_array($elements)) {
+            throw new RuntimeException('Array or object in JSON string expected');
+        }
+
+        return new Stream($elements);
+    }
+
     public static function keys($array): self {
         $stream = [];
         foreach ($array as $k => $v) {
@@ -455,7 +465,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $streamArray;
     }
 
-    public function json(): string {
+    public function toJson(): string {
         $this->checkValidity();
 
         $streamArray = $this->elements;
