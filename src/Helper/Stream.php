@@ -341,7 +341,7 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         $this->checkValidity();
 
         if ($comparison === null) {
-            $this->elements = array_unique($this->elements, SORT_REGULAR);
+            $this->elements = array_unique($this->elements);
         } else {
             return $this->keymap(static fn($element) => [
                 $comparison($element),
