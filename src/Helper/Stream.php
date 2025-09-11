@@ -341,10 +341,23 @@ class Stream implements Countable, IteratorAggregate, ArrayAccess {
         return $this;
     }
 
-    public function unique(): self {
+
+    /**
+     * Remove duplicate elements from the Stream
+     * If a callback is provided, we use it to generate a unique comparison key for each element
+     * @param ?callable(mixed): (string|int) $comparison
+     */
+    public function unique(?callable $comparison = null): self {
         $this->checkValidity();
 
-        $this->elements = array_unique($this->elements);
+        if ($comparison === null) {
+            $this->elements = array_unique($this->elements);
+        } else {
+            return $this->keymap(static fn($element) => [
+                $comparison($element),
+                $element
+            ]);
+        }
         return $this;
     }
 
