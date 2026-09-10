@@ -7,6 +7,8 @@ class StringHelper {
     public const PHONE_NUMBER_REGEX = "/^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$/";
     public const INTEGER_AND_DECIMAL_REGEX = '/^\d+(?:[.,]\d+)?$/';
 
+    public const ENCODING_UTF8 = 'UTF-8';
+
     public static function stripUTF8Accents($str, &$map): string {
         // find all multibyte characters (cf. utf-8 encoding specs)
         $matches = [];
@@ -71,5 +73,12 @@ class StringHelper {
         }
 
         return $pattern;
+    }
+
+    public static function substr(string $string,
+                                  int $start,
+                                  ?int $length = null,
+                                  string $encoding = self::ENCODING_UTF8): string {
+        return mb_substr($string, $start, $length, $encoding);
     }
 }
